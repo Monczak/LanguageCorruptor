@@ -17,7 +17,7 @@ Analysis data for the training file will be saved in cache.bin, in the same dire
 #### Command line arguments
 - `-f, --file` - Path to the training file. Can be absolute.
 - `-d, --depth` - How many previous letters the model should remember. Higher values will produce more source-like text, while lower values will usually produce gibberish that looks to be written in the training file's language. Extremely high values (more than twice the average word length) will make the model repeat the text verbatim.
-- `-s, --seed` - A string with which the generated text should start. Must be of length (depth + 1).
+- `-s, --seed` - A string with which the generated text should start. Must be of length (depth + 1). Should be a fragment of the original text.
 - `-o, --output` - Path to the output file. The generated text will be saved there.
 
 ##### Optional command line arguments
