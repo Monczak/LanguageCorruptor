@@ -65,4 +65,6 @@ If the model were trained on a training file which contains lots of repeated cha
 A negative saturation value with a somewhat large depth (for example a depth of 4, saturation of -5) will produce an "inverted" version of the original file, where the least common sequences of letters/words are the most common.
 
 #### Depth
-A small depth (1 or 2) will make the model make up its own words, most often long ones. These words usually seem to be valid words in the original file's language, albeit way more complicated and hard to pronounce. 
+A depth of 1 will make the model make up its own words, most often long ones. These words usually seem to be valid words in the original file's language, albeit way more complicated and hard to pronounce.
+
+A depth of 2 or above makes the model learn individual words pretty well. A depth of 5 or above enables the model to piece words together in a comprehensible and (mostly) correct way.
