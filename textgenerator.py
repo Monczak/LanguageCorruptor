@@ -20,7 +20,7 @@ parser.add_argument("--attempts", help="max attempt count for text generation", 
 parser.add_argument("--saturation", help="exponent applied to each next letter's weight. "
                                          "More saturation = model is more likely to pick more common continuations. "
                                          "If 0, model will pick random continuations", type=float, default=1)
-parser.add_argument("--encoding")
+parser.add_argument("--encoding", help="encoding of the training file", type=str, default="utf-8")
 
 args = parser.parse_args()
 
@@ -40,7 +40,7 @@ if cached_dict is not None \
     letter_dict = cached_dict.letter_dict
     depth = cached_dict.letter_dict_depth
 else:
-    with open(args.file, "r", encoding="ansi") as file:
+    with open(args.file, "r", encoding=args.encoding) as file:
         text = file.read()
 
     print("Analyzing...")
