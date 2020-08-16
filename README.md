@@ -42,7 +42,7 @@ Letters are picked with a weighted randomizer, where the weights are the number 
 
 This is repeated until the text reaches a specified length.
 
-### Remarks
+### Remarks and observations
 #### Punctuation
 Interestingly, the model is capable of somewhat proper punctuation. This is natural - for example, after a period and space, it is way more likely that a capital letter will appear than a non-capital letter.
 
@@ -61,3 +61,8 @@ If the model were trained on a novel, higher saturation would produce larger, al
 If the model were trained on a piece of code, high saturation will most likely produce a large amount of whitespaces, interrupted by small pieces of code.
 
 If the model were trained on a training file which contains lots of repeated characters, high saturation will make the model "embrace" the repetition and could potentially produce a file full of the same character.
+
+A negative saturation value with a somewhat large depth (for example a depth of 4, saturation of -5) will produce an "inverted" version of the original file, where the least common sequences of letters/words are the most common.
+
+#### Depth
+A small depth (1 or 2) will make the model make up its own words, most often long ones. These words usually seem to be valid words in the original file's language, albeit way more complicated and hard to pronounce. 
