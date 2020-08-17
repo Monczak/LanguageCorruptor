@@ -1,4 +1,6 @@
 import argparse
+from pathlib import Path
+from statistics import stdev, mean
 
 import analyze
 import generate
@@ -6,6 +8,7 @@ from cacheddict import CachedLetterDict
 
 # Constants
 preview_paragraphs = 3
+length_stdev_threshold = 0.4
 
 parser = argparse.ArgumentParser(description="Butcher a text file.")
 parser.add_argument("-f", "--files", help="paths to training files", type=str, required=True, nargs="+")
@@ -40,9 +43,24 @@ if cached_dict is not None \
     depth = cached_dict.letter_dict_depth
 else:
     text = ""
+    file_lengths = []
     for filename in args.files:
         with open(filename, "r", encoding=args.encoding) as file:
-            text += file.read() + "\n"
+            content = file.read()
+            file_lengths.append(len(content))
+            text += content + "\n"
+
+    if len(file_lengths) > 1:
+        length_sum = sum(file_lengths)
+        normalized_file_lengths = [x / length_sum for x in file_lengths]
+        deviation = stdev(normalized_file_lengths)
+        mean_file_length = mean(normalized_file_lengths)
+        if deviation > length_stdev_threshold:
+            favored_files = []
+            for i in range(len(args.files)):
+                if normalized_file_lengths[i] > mean_file_length:
+                    favored_files.append(Path(args.files[i]).name)
+            print("WARN: using training files with uneven lengths, model will favor {}".format(", ".join(favored_files)))
 
     print("Analyzing...")
     letter_dict = analyze.analyze_text(text, depth)
