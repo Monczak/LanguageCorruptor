@@ -13,7 +13,8 @@ Clone this repo and navigate to it in a terminal. To run the generator, type:
 
 This will train the generator on the specified text file and create a 10000-character piece of text, which will be saved in the output file.
 Analysis data for the training files will be saved in cache.bin, in the same directory as the generator, for reuse in other generation attempts based on the same training files.
-The model supports multiple training files - just type their paths one after the other.
+
+The model supports multiple training files - just type their paths one after the other. The generator will warn you if files are of uneven length - if this happens, the model would favor the longer training texts over the shorter ones, resulting in generated text that resembles the larger file more than the others.
 
 #### Command line arguments
 - `-f, --files` - Paths to the training files. Can be absolute.
@@ -26,6 +27,7 @@ The model supports multiple training files - just type their paths one after the
 - `--attempts` - How many times the generator should attempt to generate text. Sometimes it fails for unknown reasons, usually when the training text is too short or is incomplete. Defaults to 1.
 - `--saturation` - An exponent applied to each potential next letter's weight. Higher values will make the model more likely to pick more common continuations. A value of 0 will make every letter equally likely to be picked, which usually results in gibberish (the effect diminishes with higher depth). Negative values will make the model favor less common continuations. Defaults to 1.
 - `--encoding` - The encoding of all provided training files. Defaults to utf-8. This does not usually need to be changed, but this option could be useful for other file formats/types.
+- `--reanalyze` - Forces a reanalysis of the training files and overwrites the current cache.
 
 ### Examples
 Procedurally generated Macbeth (depth 3, saturation 1.2)
