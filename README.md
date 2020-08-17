@@ -12,10 +12,11 @@ Clone this repo and navigate to it in a terminal. To run the generator, type:
 `python textgenerator.py -f path/to/training/file -d learn_depth -s seed -o path/to/output/file`
 
 This will train the generator on the specified text file and create a 10000-character piece of text, which will be saved in the output file.
-Analysis data for the training file will be saved in cache.bin, in the same directory as the generator, for reuse in other generation attempts based on the same training file.
+Analysis data for the training files will be saved in cache.bin, in the same directory as the generator, for reuse in other generation attempts based on the same training files.
+The model supports multiple training files - just type their paths one after the other.
 
 #### Command line arguments
-- `-f, --file` - Path to the training file. Can be absolute.
+- `-f, --files` - Paths to the training files. Can be absolute.
 - `-d, --depth` - How many previous letters the model should remember. Higher values will produce more source-like text, while lower values will usually produce gibberish that looks to be written in the training file's language. Extremely high values (more than twice the average word length) will make the model repeat the text verbatim.
 - `-s, --seed` - A string with which the generated text should start. Must be of length (depth + 1). Should be a fragment of the original text.
 - `-o, --output` - Path to the output file. The generated text will be saved there.
@@ -24,7 +25,7 @@ Analysis data for the training file will be saved in cache.bin, in the same dire
 - `-l, --length` - How long the generated text should be (amount of characters). Defaults to 10000.
 - `--attempts` - How many times the generator should attempt to generate text. Sometimes it fails for unknown reasons, usually when the training text is too short or is incomplete. Defaults to 1.
 - `--saturation` - An exponent applied to each potential next letter's weight. Higher values will make the model more likely to pick more common continuations. A value of 0 will make every letter equally likely to be picked, which usually results in gibberish (the effect diminishes with higher depth). Negative values will make the model favor less common continuations. Defaults to 1.
-- `--encoding` - The encoding of the training file. Defaults to utf-8. This does not usually need to be changed, but this option could be useful for other file formats/types.
+- `--encoding` - The encoding of all provided training files. Defaults to utf-8. This does not usually need to be changed, but this option could be useful for other file formats/types.
 
 ### Examples
 Procedurally generated Macbeth (depth 3, saturation 1.2)
@@ -152,11 +153,11 @@ import generated longer seed is more likely to eached_dict.len(argument("WARN: s
 ### How it works
 
 #### Analysis
-The model first scans the training file and makes note of which letters come after which strings of letters. The length of the string is determined by the depth.
+The model first scans the training files and makes note of which letters come after which strings of letters. The length of the string is determined by the depth.
 
-For example, if "the" is the most common word in the training file and the model looks at the character `h`, which is preceded by `t`, the next letter will most likely be `e`.
+For example, if "the" is the most common word in the training files and the model looks at the character `h`, which is preceded by `t`, the next letter will most likely be `e`.
 
-The model builds a dictionary of letters, which contains information on successing letter count dependent on a previous sequence of letters. This dictionary is cached to a file, which can be opened and used by the generator instead of analyzing the training file again.
+The model builds a dictionary of letters, which contains information on successing letter count dependent on a previous sequence of letters. This dictionary is cached to a file, which can be opened and used by the generator instead of analyzing the training files again.
 
 #### Generation
 The model tries to generate a piece of text with a specified length. It starts with the seed, looks up the last character in the dictionary, looks at the preceding letters and appends a new letter, which is picked randomly from the sub-dictionary.
