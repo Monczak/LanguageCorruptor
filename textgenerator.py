@@ -23,6 +23,7 @@ parser.add_argument("--saturation", help="exponent applied to each next letter's
                                          "More saturation = model is more likely to pick more common continuations. "
                                          "If 0, model will pick random continuations", type=float, default=1)
 parser.add_argument("--encoding", help="encoding of the training file", type=str, default="utf-8")
+parser.add_argument("--reanalyze", help="force a repeated analysis and cache rebuild", action="store_true")
 
 args = parser.parse_args()
 
@@ -37,7 +38,8 @@ if len(args.seed) != depth + 1:
 
 cached_dict = CachedLetterDict.deserialize("cache.bin")
 if cached_dict is not None \
-        and cached_dict.training_file_names == args.files and cached_dict.letter_dict_depth == args.depth:
+        and cached_dict.training_file_names == args.files and cached_dict.letter_dict_depth == args.depth \
+        and not args.reanalyze:
     print("Loading letter dict from cache...")
     letter_dict = cached_dict.letter_dict
     depth = cached_dict.letter_dict_depth
