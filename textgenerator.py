@@ -1,15 +1,14 @@
+import argparse
+
 import analyze
 import generate
-import pickle
-import argparse
 from cacheddict import CachedLetterDict
-from os import path
 
 # Constants
 preview_paragraphs = 3
 
 parser = argparse.ArgumentParser(description="Butcher a text file.")
-parser.add_argument("-f", "--file", help="path to training file", type=str, required=True)
+parser.add_argument("-f", "--files", help="paths to training files", type=str, required=True, nargs="+")
 parser.add_argument("-d", "--depth", help="how many previous letters to remember", type=int, required=True)
 parser.add_argument("-s", "--seed", help="what the generated text should start with, must be of length depth + 1",
                     type=str, required=True)
@@ -35,19 +34,21 @@ if len(args.seed) != depth + 1:
 
 cached_dict = CachedLetterDict.deserialize("cache.bin")
 if cached_dict is not None \
-        and cached_dict.training_file_name == args.file and cached_dict.letter_dict_depth == args.depth:
+        and cached_dict.training_file_names == args.files and cached_dict.letter_dict_depth == args.depth:
     print("Loading letter dict from cache...")
     letter_dict = cached_dict.letter_dict
     depth = cached_dict.letter_dict_depth
 else:
-    with open(args.file, "r", encoding=args.encoding) as file:
-        text = file.read()
+    text = ""
+    for filename in args.files:
+        with open(filename, "r", encoding=args.encoding) as file:
+            text += file.read() + "\n"
 
     print("Analyzing...")
     letter_dict = analyze.analyze_text(text, depth)
 
     print("Saving letter dict...")
-    cached_dict = CachedLetterDict(letter_dict, args.file, depth)
+    cached_dict = CachedLetterDict(letter_dict, args.files, depth)
     cached_dict.serialize("cache.bin")
 
 print("Generating...")

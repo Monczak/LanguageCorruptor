@@ -4,17 +4,17 @@ from os import path
 
 class CachedLetterDict:
     letter_dict = None
-    training_file_name = None
+    training_file_names = None
     letter_dict_depth = None
 
     def __init__(self, new_letter_dict: dict, new_training_file_name: str, new_letter_dict_depth: int):
         self.letter_dict = new_letter_dict
-        self.training_file_name = new_training_file_name
+        self.training_file_names = new_training_file_name
         self.letter_dict_depth = new_letter_dict_depth
 
     def serialize(self, file_path):
         with open(file_path, "wb") as file:
-            file.write(pickle.dumps((self.letter_dict, self.training_file_name, self.letter_dict_depth)))
+            file.write(pickle.dumps((self.letter_dict, self.training_file_names, self.letter_dict_depth)))
 
     @staticmethod
     def deserialize(file_path):
