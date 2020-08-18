@@ -28,6 +28,7 @@ The model supports multiple training files - just type their paths one after the
 - `--saturation` - An exponent applied to each potential next letter's weight. Higher values will make the model more likely to pick more common continuations. A value of 0 will make every letter equally likely to be picked, which usually results in gibberish (the effect diminishes with higher depth). Negative values will make the model favor less common continuations. Defaults to 1.
 - `--encoding` - The encoding of all provided training files. Defaults to utf-8. This does not usually need to be changed, but this option could be useful for other file formats/types.
 - `--reanalyze` - Forces a reanalysis of the training files and overwrites the current cache.
+- `--balance` - Attempts to equalize lengths of the training files by repeating shorter files. Has effect only when building the letter dictionary - won't do anything if reading from cache.
 
 ### Examples
 Procedurally generated Macbeth (depth 3, saturation 1.2)

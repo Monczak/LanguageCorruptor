@@ -1,4 +1,5 @@
 import argparse
+from math import floor
 from pathlib import Path
 from statistics import stdev, mean
 
@@ -24,6 +25,7 @@ parser.add_argument("--saturation", help="exponent applied to each next letter's
                                          "If 0, model will pick random continuations", type=float, default=1)
 parser.add_argument("--encoding", help="encoding of the training file", type=str, default="utf-8")
 parser.add_argument("--reanalyze", help="force a repeated analysis and cache rebuild", action="store_true")
+parser.add_argument("--balance", help="try to balance lengths of uneven training files", action="store_true")
 
 args = parser.parse_args()
 
@@ -46,6 +48,8 @@ if cached_dict is not None \
 else:
     text = ""
     file_lengths = []
+    repeat_counts = []
+    analyses = []
     for filename in args.files:
         with open(filename, "r", encoding=args.encoding) as file:
             content = file.read()
@@ -57,15 +61,32 @@ else:
         normalized_file_lengths = [x / length_sum for x in file_lengths]
         deviation = stdev(normalized_file_lengths)
         mean_file_length = mean(normalized_file_lengths)
-        if deviation > length_stdev_threshold:
-            favored_files = []
+
+        if args.balance:
+            max_file_length = max(normalized_file_lengths)
+            repeat_counts = [floor(max_file_length / l - 0.001) for l in normalized_file_lengths]
             for i in range(len(args.files)):
-                if normalized_file_lengths[i] > mean_file_length:
-                    favored_files.append(Path(args.files[i]).name)
-            print("WARN: using training files with uneven lengths, model will favor {}".format(", ".join(favored_files)))
+                if repeat_counts[i] > 0:
+                    print("Repeating {0} {1} times".format(Path(args.files[i]).name, repeat_counts[i]))
+        else:
+            if deviation > length_stdev_threshold:
+                favored_files = []
+                for i in range(len(args.files)):
+                    if normalized_file_lengths[i] > mean_file_length:
+                        favored_files.append(Path(args.files[i]).name)
+                print("WARN: using training files with uneven lengths, model will favor {}".format(", ".join(favored_files)))
 
     print("Analyzing...")
-    letter_dict = analyze.analyze_text(text, depth)
+    for i in range(len(args.files)):
+        analyses.append(analyze.analyze_text(text, depth))
+        analyze.scale_dict(analyses[i], repeat_counts[i])
+
+    if len(args.files) > 1:
+        print("Merging analyses...")
+        for i in range(1, len(args.files)):
+            analyze.merge_dicts(analyses[0], analyses[i])
+
+    letter_dict = analyses[0]
 
     print("Saving letter dict...")
     cached_dict = CachedLetterDict(letter_dict, args.files, depth)
